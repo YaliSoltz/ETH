@@ -1,0 +1,311 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+/* --------------------------------------------------------------------main--------------------------------------------------------------- */
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(
+    55deg,
+    rgb(89, 57, 218) 20%,
+    rgba(131, 58, 180, 1) 30%,
+    rgba(253, 29, 29, 1) 100%
+  );
+}
+
+.main .card {
+  width: 450px;
+  height: 450px;
+  background-color: rgb(35, 35, 40);
+  border-radius: 10px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 30px 10px 30px;
+}
+
+.main .card-header {
+  display: flex;
+  width: 100%;
+  height: 20%;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 30px;
+  font-weight: 600;
+  position: relative;
+}
+
+.main .card .body {
+  background-color: rgb(26, 26, 26);
+  border-radius: 10px;
+  width: 100%;
+  height: 65%;
+}
+
+.main .card .footer {
+  width: 100%;
+  height: 20%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* -----------------------------------header-------------------------------------- */
+
+.select-convertTo {
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  top: 50px;
+  right: 0;
+  background-color: rgb(65, 65, 73);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.option-convertTo {
+  font-size: 14px;
+  font-weight: 500;
+  color: gray;
+  cursor: pointer;
+}
+.option-convertTo:hover {
+  color: white;
+}
+
+.dots-container {
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  cursor: pointer;
+  gap: 3px;
+  padding: 5px 0 5px 0;
+}
+
+.dot {
+  height: 5px;
+  width: 5px;
+  border-radius: 50%;
+  background-color: white;
+}
+
+/* -----------------------------------body-------------------------------------- */
+
+.eth-price {
+  padding: 10px 0 0 20px;
+  font-size: 24px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.eth-price .price-change {
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.price-change#positive {
+  background-color: green;
+}
+.price-change#negative {
+  background-color: red;
+}
+
+.price-change .arrow-down {
+  width: 0;
+  margin-bottom: 1px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid white;
+  display: inline-block;
+}
+
+.price-change .arrow-up {
+  width: 0;
+  margin-bottom: 3px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid white;
+  display: inline-block;
+}
+
+#myChart {
+  min-height: 225px;
+}
+
+.chart-days-container {
+  display: flex;
+  gap: 5px;
+  height: 20px;
+  padding: 0 0 10px 20px;
+}
+
+.chart-day {
+  cursor: pointer;
+  color: grey;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.chart-day input {
+  display: none;
+}
+
+.chart-day input:checked + span {
+  color: white;
+}
+
+/* -----------------------------------footer-------------------------------------- */
+
+.eth-volume {
+  color: grey;
+}
+
+.eth-volume select {
+  background: none;
+  color: rgb(152, 150, 150);
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  /* appearance: none; */
+}
+
+.open-full-chart {
+  color: white;
+  padding: 0px 20px 0px 20px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  transition: ease-in-out 0.5s;
+  font-weight: 700;
+  position: relative;
+  overflow: hidden;
+  height: 2.3rem;
+  background: #3d3a4e;
+}
+
+.open-full-chart:hover {
+  transform: scale(1.1);
+}
+
+.open-full-chart:hover::before {
+  transform: scale(1.1);
+}
+
+.open-full-chart::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scaleX(0);
+  transform-origin: 0;
+  width: 100%;
+  height: inherit;
+  background: linear-gradient(
+    55deg,
+    rgb(89, 57, 218) 20%,
+    rgba(131, 58, 180, 1) 30%,
+    rgba(253, 29, 29, 1) 80%
+  );
+  transition: ease-in-out 0.5s;
+}
+
+.open-full-chart-content {
+  position: relative;
+}
+
+/*-----------------------------loader------------------ */
+
+.loader {
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  box-shadow: -10px -10px 10px #6359f8, 0px -10px 10px 0px #9c32e2,
+    10px -10px 10px #f36896, 10px 0 10px #ff0b0b, 10px 10px 10px 0px#ff5500,
+    0 10px 10px 0px #ff9500, -10px 10px 10px 0px #ffb700;
+  background-color: rgb(240, 230, 240);
+  animation: rot55 1.8s linear infinite;
+}
+
+.loader-in {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes rot55 {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --------------------------------------------------------------------full-chart--------------------------------------------------------------- */
+
+.full-chart {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #34323f;
+}
+
+.chart-card {
+  width: 700px;
+  min-height: 400px;
+  border: 2px solid black;
+  border-radius: 20px;
+  padding: 10px;
+  background-color: #d5d2e0;
+}
+
+.chart-days-radios {
+  display: flex;
+  border-radius: 8px;
+  background-color: whitesmoke;
+  box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
+  padding: 4px;
+  width: 40%;
+  font-size: 14px;
+}
+
+.radio {
+  width: 100%;
+}
+
+.radio input {
+  display: none;
+}
+
+.radio span {
+  display: flex;
+  cursor: pointer;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 8px;
+  transition: all 0.2s ease-in-out;
+}
+
+.radio input:checked + span {
+  background-color: white;
+  font-weight: 600;
+}
