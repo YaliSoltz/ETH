@@ -76,16 +76,19 @@ const Main = () => {
           legend: false,
           title: {
             display: true,
-            text: "Last week changes",
+            text: `Last ${
+              num === 7
+                ? "week"
+                : num === 30
+                ? "month"
+                : num === 365
+                ? "year"
+                : num + " days"
+            } changes`,
           },
         },
         scales: {
           y: {
-            // ticks: {
-            //   callback: function (value, index, ticks) {
-            //     return eth[currency].symbol + value.toLocaleString();
-            //   },
-            // },
             display: false,
             position: "right",
             grid: {
@@ -216,10 +219,6 @@ const Main = () => {
                     eth.USD?.name}
               </span>
             </div>
-
-            {/* <button className="open-full-chart">
-              <span className="open-full-chart-content">Lanch Full Chart</span>
-            </button> */}
           </div>
         </div>
       ) : (
