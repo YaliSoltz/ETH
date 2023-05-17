@@ -37,17 +37,20 @@ const EthProvider = ({ children }) => {
     const url = "http://localhost:4000/api/eth/";
     const { data } = await axios.get(url);
     console.log(data);
+
+    const { last_updated } = data;
     setEth({ ...data });
-    getEthPrices(data.last_updated, {
-      USD: data.USD.price,
-      EUR: data.EUR.price,
-      BTC: data.BTC.price,
-    });
+    let priceObj = {};
+    currencyArr.map((currency) => (priceObj[currency] = data[currency].price));
+    getEthPrices(
+      last_updated,
+
+      priceObj
+    );
   };
 
-  // Func that get the last 365 days ETH price in USD and date
-  const getEthPrices = async (date, price) => {
-    console.log(price);
+  // Func that get the last 365 days ETH price and date
+  const getEthPrices = async (date, priceObj) => {
     let obj = {};
     for (let i = 0; i < currencyArr.length; i++) {
       const currency = currencyArr[i];
@@ -56,7 +59,7 @@ const EthProvider = ({ children }) => {
 
       // Sort the array by date
       let tempArray = data.prices.sort((a, b) => b[0] - a[0]);
-      tempArray.splice(0, 2, [date, price[currency]]);
+      tempArray.splice(0, 2, [date, priceObj[currency]]);
 
       // Convert the Unix timestamp value to a human-readable date and time
       tempArray.forEach((price) => {
@@ -74,8 +77,8 @@ const EthProvider = ({ children }) => {
     const intervalId = setInterval(() => {
       getEth();
     }, 1000 * 60);
+    getEth();
     return () => {
-      getEth();
       clearInterval(intervalId);
     };
   }, []);
