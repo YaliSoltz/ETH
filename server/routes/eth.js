@@ -10,6 +10,7 @@ router.get("/", async (req, res) => {
     ["USD", "$"],
     ["EUR", "€"],
     ["BTC", "₿"],
+    ["ILS","₪"]
   ];
 
   // ETH obj

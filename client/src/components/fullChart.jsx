@@ -36,26 +36,7 @@ const FullChart = () => {
           },
         ],
       },
-      options: {
-        plugins: {
-          legend: false,
-          title: {
-            display: true,
-            text: `${num} days changes in USD`,
-          },
-        },
-        scales: {
-          y: {
-            ticks: {
-              callback: function (value, index, ticks) {
-                return eth["USD"].symbol + value.toLocaleString();
-              },
-            },
-            position: "right",
-          },
-          x: {},
-        },
-      },
+        
     });
     setChart(newChart);
   };
