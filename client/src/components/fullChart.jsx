@@ -2,10 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import Chart from "chart.js/auto";
 import ethSign from "../img/ethSign.png";
 
-import { EthContext } from "../context/eth";
+import { CoinContext } from "../context/coin";
 
 const FullChart = () => {
-  const { allPrices, eth, chart, setChart } = useContext(EthContext);
+  const { allPrices, eth, chart, setChart } = useContext(CoinContext);
 
   const numbers = [7, 30, 60, 90, 180, 365];
 
@@ -36,7 +36,6 @@ const FullChart = () => {
           },
         ],
       },
-        
     });
     setChart(newChart);
   };
@@ -64,7 +63,7 @@ const FullChart = () => {
           <div className="loader-in">
             <img
               src={ethSign}
-              alt="ETH-SIGN"
+              alt="Coin-SIGN"
               style={{ width: 50, height: 100 }}
             />
           </div>

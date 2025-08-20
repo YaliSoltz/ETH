@@ -1,0 +1,34 @@
+.page-select {
+
+    position: absolute;
+    background: rgb(35, 35, 40);
+    color: white;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    border-radius: 0 10px 10px 0;
+}
+.page-link {
+    padding: 10px 20px;
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    display: flex;
+    border-radius: 0 10px 10px 0;
+}
+.icon {
+    margin-right: 10px;
+}
+
+.page-link:hover {
+    background: rgb(50, 50, 55);
+    cursor: pointer;
+}
+.page-link:active {
+    background: rgb(60, 60, 65);
+}
+.selected {
+    background: rgb(60, 60, 65) !important;
+}

@@ -1,11 +1,13 @@
 import React, { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import { currencyArr } from "../currency";
+import { coins } from "../consts";
 
-export const EthContext = createContext();
+export const CoinContext = createContext();
 
-const EthProvider = ({ children }) => {
-  const [eth, setEth] = useState({}); // The ETH obj
+const CoinProvider = ({ children }) => {
+  const [currCoin, setCurrCoin] = useState("sol"); // Setting the coin
+  const [coinObj, setCoinObj] = useState({}); // The coin obj
   const [currentCurrency, setCurrentCurrency] = useState(); // The current currency to display
   const [volumeOrMarketCap, setVolumeOrMarketCap] = useState("volume_24h"); // Choose what to display at the market-cap / 24hour volume select
   const [allPrices, setAllPrices] = useState({}); // Object of arraies of last 365 days ETH price and date in USD/EUR/BTC
@@ -23,8 +25,8 @@ const EthProvider = ({ children }) => {
   const chooseCurrency = (key) => {
     const select = document.getElementById("select-convertTo");
     select.style.display = "none";
-    console.log(eth[key]);
-    setCurrentCurrency({ ...eth[key] });
+    console.log(coinObj[key]);
+    setCurrentCurrency({ ...coinObj[key] });
   };
 
   // Func that change the market-cap / 24hour volume select
@@ -32,29 +34,29 @@ const EthProvider = ({ children }) => {
     setVolumeOrMarketCap(value);
   };
 
-  // Func that get the ETH obj from the server and set it
-  const getEth = async () => {
-    const url = "http://localhost:4000/api/eth/";
+  // Func that get the coin obj from the server and set it
+  const getCoinObj = async () => {
+    const url = `http://localhost:4000/api/${currCoin}/`;
     const { data } = await axios.get(url);
     console.log(data);
 
     const { last_updated } = data;
-    setEth({ ...data });
+    setCoinObj({ ...data });
     let priceObj = {};
     currencyArr.map((currency) => (priceObj[currency] = data[currency].price));
-    getEthPrices(
+    getCoinPrices(
       last_updated,
 
-      priceObj
+      priceObj,
     );
   };
 
-  // Func that get the last 365 days ETH price and date
-  const getEthPrices = async (date, priceObj) => {
+  // Func that get the last 365 days coin price and date
+  const getCoinPrices = async (date, priceObj) => {
     let obj = {};
     for (let i = 0; i < currencyArr.length; i++) {
       const currency = currencyArr[i];
-      const url = `https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=${currency}&days=365`;
+      const url = `https://api.coingecko.com/api/v3/coins/${coins[currCoin].name}/market_chart?vs_currency=${currency}&days=365&x_cg_demo_api_key=${process.env.REACT_APP_CRYPTO_API_KEY}`;
       const { data } = await axios.get(url);
 
       // Sort the array by date
@@ -72,28 +74,35 @@ const EthProvider = ({ children }) => {
     setAllPrices({ ...obj });
   };
 
-  // useEffect func to run getEth and getEthPrices functions on component mount and run them every minute for updating the eth price
+  // useEffect func to run getCoinObj and getCoinPrices functions on component mount and run them every minute for updating the eth price
   useEffect(() => {
     const intervalId = setInterval(() => {
-      getEth();
+      getCoinObj();
     }, 1000 * 60);
-    getEth();
+    getCoinObj();
+
     return () => {
       clearInterval(intervalId);
     };
   }, []);
 
+  useEffect(() => {
+    getCoinObj();
+  }, [currCoin]);
+
   return (
-    <EthContext.Provider
+    <CoinContext.Provider
       value={{
-        eth,
-        setEth,
+        coinObj,
+        setCoinObj,
         currentCurrency,
         setCurrentCurrency,
         volumeOrMarketCap,
         setVolumeOrMarketCap,
         allPrices,
         setAllPrices,
+        currCoin,
+        setCurrCoin,
         openCurrencySelect,
         chooseCurrency,
         changeVolumeOrMarketCap,
@@ -102,8 +111,8 @@ const EthProvider = ({ children }) => {
       }}
     >
       {children}
-    </EthContext.Provider>
+    </CoinContext.Provider>
   );
 };
 
-export default EthProvider;
+export default CoinProvider;

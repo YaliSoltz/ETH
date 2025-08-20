@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const eth = require("./routes/eth");
+const coin = require("./routes/coin");
 
 const app = express();
 const port = 4000;
@@ -14,7 +14,7 @@ mongoose
 
 app.use(express.json());
 app.use(cors());
-app.use("/api/eth", eth);
+app.use("/api/", coin);
 
 app.get("/", (req, res) => res.send("Hello World!"));
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));

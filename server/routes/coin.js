@@ -1,31 +1,44 @@
 const { Router } = require("express");
 const axios = require("axios");
-const { ETH } = require("../model/eth");
 const router = Router();
+const { ETH } = require("../model/eth");
+const { SOL } = require("../model/sol");
 
-// Get ETH
-router.get("/", async (req, res) => {
-  // Array of all the ETH currencies
+const coins = {
+  eth: {
+    name: "ethereum",
+    symbol: "ETH",
+    schema: ETH,
+  },
+  sol: {
+    name: "solana",
+    symbol: "SOL",
+    schema: SOL,
+  },
+};
+
+// Get Coin
+router.get("/:coin", async (req, res) => {
+  // Array of all the Coin currencies
   const currencyArr = [
     ["USD", "$"],
     ["EUR", "€"],
     ["BTC", "₿"],
-    ["ILS","₪"]
+    ["ILS", "₪"],
   ];
 
-  // ETH obj
-  let objETH = {};
+  // Coin obj
+  let objCoin = {};
 
-  // ETH Api url
-  const url =
-    "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=ETH&convert=";
+  // Coin Api url
+  const url = `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${req.params.coin}&convert=`;
 
   // My API key for the api
   const headers = {
     "X-CMC_PRO_API_KEY": "92644239-8cbd-47fa-b5d7-7b0ab1d60a9a",
   };
 
-  // Loop that get all the ETH data for each currency and set them into objETH object
+  // Loop that get all the Coin data for each currency and set them into objCoin object
   for (let i = 0; i < currencyArr.length; i++) {
     try {
       const { data } = await axios.get(url + currencyArr[i][0], { headers });
@@ -48,13 +61,12 @@ router.get("/", async (req, res) => {
         percent_change_60d,
         percent_change_90d,
         last_updated,
-      } = data.data.ETH.quote[currency];
-
-      if (!objETH.last_updated) {
-        objETH.last_updated = new Date(last_updated).toLocaleString();
+      } = data.data[coins[req.params.coin].symbol].quote[currency];
+      if (!objCoin.last_updated) {
+        objCoin.last_updated = new Date(last_updated).toLocaleString();
       }
 
-      objETH[currency] = {
+      objCoin[currency] = {
         name: currency,
         symbol,
         price,
@@ -74,18 +86,18 @@ router.get("/", async (req, res) => {
     }
   }
 
+  res.status(200).send(objCoin);
   try {
-    let eth = new ETH(objETH);
-    eth = await eth.save();
-    res.status(200).send(objETH);
+    let coinToSave = new coins[req.params.coin].schema(objCoin);
+    coinToSave = await coinToSave.save();
   } catch (error) {
     res.status(400).send(error.message);
   }
 });
 
 // Delete all
-router.delete("/", async (req, res) => {
-  await ETH.deleteMany();
+router.delete("/:coin", async (req, res) => {
+  await coins[req.params.coin].schema.deleteMany();
   res.send("All deleted");
 });
 
