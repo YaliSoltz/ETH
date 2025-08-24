@@ -1,12 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import ethSign from "../img/ethSign.png";
-import { EthContext } from "../context/eth";
+import { CoinContext } from "../context/coin";
 import Chart from "chart.js/auto";
 import { currencyArr } from "../currency";
+import { coins } from "../consts";
+import { useLocation } from "react-router-dom";
 
 const Main = () => {
   const {
-    eth,
+    currCoin,
+    coinObj,
     currentCurrency,
     volumeOrMarketCap,
     openCurrencySelect,
@@ -15,26 +18,28 @@ const Main = () => {
     allPrices,
     chart,
     setChart,
-  } = useContext(EthContext);
-
-  const myChart = document.getElementById("myChart"); // The chart canvas element
+    isLoading,
+    cleanupChart,
+  } = useContext(CoinContext);
 
   const numbers = [7, 30, 180, 365];
 
-  // Func that open the price chart
   const showChart = (currency, num) => {
+    const myChart = document.getElementById("myChart");
+
+    if (!myChart) return;
+
     const tempArray = allPrices[currency].slice(0, num);
     const priceArray = tempArray.map((price) => price[1]);
     const dateArray = tempArray.map((price) => price[0]);
 
-    // Func that make the line colors
     function getGradient(ctx, chartArea) {
       let gradient;
       gradient = ctx.createLinearGradient(
         0,
         chartArea.bottom,
         0,
-        chartArea.top
+        chartArea.top,
       );
       gradient.addColorStop(1, "rgb(40, 57, 218)");
       gradient.addColorStop(0.5, "rgba(131, 58, 180, 1)");
@@ -42,17 +47,22 @@ const Main = () => {
       return gradient;
     }
 
-    // Destroy the previously created chart if it exists
     if (chart) {
       chart.destroy();
     }
 
-    // New Chart instance
+    const existingChart = Chart.getChart(myChart);
+    if (existingChart) {
+      existingChart.destroy();
+    }
+
     const newChart = new Chart(myChart, {
       type: "line",
       data: {
         labels: dateArray
-          .map((date, i) => (i === 0 ? "Today" : date))
+          .map((date, i) =>
+            i === 0 ? "Today" : i === 1 ? "Yesterday" : date.split(",")[0],
+          )
           .reverse(),
         datasets: [
           {
@@ -80,10 +90,10 @@ const Main = () => {
               num === 7
                 ? "week"
                 : num === 30
-                ? "month"
-                : num === 365
-                ? "year"
-                : num + " days"
+                  ? "month"
+                  : num === 365
+                    ? "year"
+                    : num + " days"
             } changes`,
           },
         },
@@ -110,17 +120,33 @@ const Main = () => {
   };
 
   useEffect(() => {
-    if (myChart) {
+    const myChart = document.getElementById("myChart");
+
+    if (myChart && Object.keys(allPrices).length !== 0) {
       showChart("USD", 7);
     }
-  }, [myChart]);
+  }, [allPrices]);
+
+  useEffect(() => {
+    return () => {
+      cleanupChart();
+
+      const myChart = document.getElementById("`myChart");
+      if (myChart) {
+        const existingChart = Chart.getChart(myChart);
+        if (existingChart) {
+          existingChart.destroy();
+        }
+      }
+    };
+  }, []);
 
   return (
     <div className="main">
-      {Object.keys(eth).length > 0 ? (
+      {Object.keys(coinObj).length > 0 && !isLoading ? (
         <div className="card">
           <div className="card-header">
-            <span className="name">ETH</span>
+            <span className="name">{coins[currCoin].symbol}</span>
 
             <section className="dots-container" onClick={openCurrencySelect}>
               <div className="dot"></div>
@@ -150,7 +176,7 @@ const Main = () => {
                   ? currentCurrency.name !== "BTC"
                     ? currentCurrency.symbol +
                       parseFloat(
-                        currentCurrency.price.toFixed(2)
+                        currentCurrency.price.toFixed(2),
                       ).toLocaleString() +
                       " " +
                       currentCurrency.name
@@ -158,23 +184,27 @@ const Main = () => {
                       currentCurrency.price.toFixed(5) +
                       " " +
                       currentCurrency.name
-                  : eth.USD?.symbol +
-                    parseFloat(eth.USD?.price.toFixed(2)).toLocaleString() +
+                  : coinObj.USD?.symbol +
+                    parseFloat(coinObj.USD?.price.toFixed(2)).toLocaleString() +
                     " " +
-                    eth.USD?.name}
+                    coinObj.USD?.name}
               </span>
               <span
                 className="price-change"
-                id={eth.USD?.percent_change_24h > 0 ? "positive" : "negative"}
+                id={
+                  coinObj.USD?.percent_change_24h > 0 ? "positive" : "negative"
+                }
               >
                 <span
                   className={
-                    eth.USD?.percent_change_24h > 0 ? "arrow-up" : "arrow-down"
+                    coinObj.USD?.percent_change_24h > 0
+                      ? "arrow-up"
+                      : "arrow-down"
                   }
                 />{" "}
                 {currentCurrency
                   ? Math.abs(currentCurrency.percent_change_24h).toFixed(2)
-                  : Math.abs(eth.USD?.percent_change_24h).toFixed(2)}
+                  : Math.abs(coinObj.USD?.percent_change_24h).toFixed(2)}
                 %
               </span>
             </div>
@@ -207,16 +237,16 @@ const Main = () => {
                 {currentCurrency
                   ? currentCurrency.symbol +
                     parseFloat(
-                      currentCurrency[volumeOrMarketCap].toFixed(2)
+                      currentCurrency[volumeOrMarketCap].toFixed(2),
                     ).toLocaleString() +
                     " " +
                     currentCurrency.name
-                  : eth.USD?.symbol +
+                  : coinObj.USD?.symbol +
                     parseFloat(
-                      eth.USD?.[volumeOrMarketCap].toFixed(2)
+                      coinObj.USD?.[volumeOrMarketCap].toFixed(2),
                     ).toLocaleString() +
                     " " +
-                    eth.USD?.name}
+                    coinObj.USD?.name}
               </span>
             </div>
           </div>
@@ -226,7 +256,7 @@ const Main = () => {
           <div className="loader-in">
             <img
               src={ethSign}
-              alt="ETH-SIGN"
+              alt="Coin-SIGN"
               style={{ width: 50, height: 100 }}
             />
           </div>

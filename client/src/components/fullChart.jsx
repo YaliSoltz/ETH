@@ -1,22 +1,29 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import Chart from "chart.js/auto";
 import ethSign from "../img/ethSign.png";
 
-import { EthContext } from "../context/eth";
+import { CoinContext } from "../context/coin";
 
 const FullChart = () => {
-  const { allPrices, eth, chart, setChart } = useContext(EthContext);
+  const { allPrices, cleanupChart, chart, setChart, isLoading } =
+    useContext(CoinContext);
 
   const numbers = [7, 30, 60, 90, 180, 365];
 
-  // Func that open the price chart by user given number of days to show
   const showChart = async (num) => {
     const myChart = document.getElementById("myChart");
+
+    if (!myChart) return;
+
+    const existingChart = Chart.getChart(myChart);
+    if (existingChart) {
+      existingChart.destroy();
+    }
+
     const tempArray = allPrices["USD"].slice(0, num);
     const priceArray = tempArray.map((price) => price[1]);
     const dateArray = tempArray.map((price) => price[0]);
 
-    // destroy the previously created chart if it exists
     if (chart) {
       chart.destroy();
     }
@@ -25,7 +32,9 @@ const FullChart = () => {
       type: "line",
       data: {
         labels: dateArray
-          .map((date, i) => (i === 0 ? "Today" : i === 1 ? "Yesterday" : date))
+          .map((date, i) =>
+            i === 0 ? "Today" : i === 1 ? "Yesterday" : date.split(",")[0],
+          )
           .reverse(),
         datasets: [
           {
@@ -36,14 +45,34 @@ const FullChart = () => {
           },
         ],
       },
-        
     });
     setChart(newChart);
   };
 
+  useEffect(() => {
+    if (Object.keys(allPrices).length !== 0) {
+      showChart(7);
+    }
+  }, [allPrices]);
+
+  useEffect(() => {
+    return () => {
+      cleanupChart();
+
+      // Also clean up any chart instance on the canvas
+      const myChart = document.getElementById("myChart");
+      if (myChart) {
+        const existingChart = Chart.getChart(myChart);
+        if (existingChart) {
+          existingChart.destroy();
+        }
+      }
+    };
+  }, []);
+
   return (
     <div className="full-chart">
-      {Object.keys(allPrices).length > 0 ? (
+      {Object.keys(allPrices).length > 0 && !isLoading ? (
         <div className="chart-card">
           <div className="chart-days-radios">
             {numbers.map((number, i) => (
@@ -64,7 +93,7 @@ const FullChart = () => {
           <div className="loader-in">
             <img
               src={ethSign}
-              alt="ETH-SIGN"
+              alt="Coin-SIGN"
               style={{ width: 50, height: 100 }}
             />
           </div>
