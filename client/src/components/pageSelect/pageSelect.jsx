@@ -1,6 +1,7 @@
 import React from "react";
 import HomeIcon from "@mui/icons-material/Home";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import "./pageSelect.css";
 import { Link, useLocation } from "react-router-dom";
 
@@ -8,7 +9,8 @@ const PageSelect = () => {
   const { pathname } = useLocation();
   const pages = [
     { name: "Home", path: "/", icon: <HomeIcon /> },
-    { name: "Full Chart", path: "/full-chart", icon: <BarChartIcon /> },
+    { name: "Chart", path: "/full-chart", icon: <BarChartIcon /> },
+    { name: "Dashboard", path: "/dashboard", icon: <DashboardIcon /> },
   ];
 
   return (

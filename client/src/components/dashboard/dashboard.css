@@ -1,0 +1,318 @@
+
+:root {
+    --bg-primary: #050505;
+    --bg-surface: rgba(20, 8, 12, 0.8);
+    --gradient-gold: linear-gradient(135deg, #FFD700 0%, #B8860B 50%, #DAA520 100%);
+    --gradient-wine: linear-gradient(135deg, #8B1538 0%, #4A0E1A 50%, #6B1028 100%);
+    --gradient-subtle: linear-gradient(135deg, rgba(139, 21, 56, 0.1) 0%, rgba(255, 215, 0, 0.1) 100%);
+    --neon-gold: #FFE55C;
+    --neon-wine: #FF6B9D;
+    --glow-gold: 0 0 20px rgba(255, 215, 0, 0.3);
+    --glow-wine: 0 0 20px rgba(139, 21, 56, 0.3);
+    --text-primary: #FAFAFA;
+    --text-muted: rgba(218, 165, 32, 0.7);
+    --text-subtle: rgba(255, 255, 255, 0.4);
+    --border-primary: rgba(139, 21, 56, 0.2);
+    --border-glow: rgba(255, 215, 0, 0.3);
+}
+
+.dashboard {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    position: relative;
+    padding-top: 50px;
+}
+
+.header {
+    border-bottom: 1px solid var(--border-primary);
+    padding: 30px 0;
+    margin-bottom: 30px;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 200;
+    margin: 0 0 10px 0;
+    letter-spacing: 1px;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-weight: 300;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.accent-line {
+    width: 3px;
+    height: 20px;
+    border-radius: 2px;
+    background: var(--gradient-gold);
+}
+
+
+
+.selector-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 300;
+}
+
+.currency-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.currency-btn {
+    padding: 10px 20px;
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-subtle);
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.currency-btn.selected {
+    color: var(--text-primary);
+    border-color: var(--border-glow);
+    box-shadow: var(--glow-gold);
+}
+
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.price-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.price-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-primary);
+    border-radius: 12px;
+    padding: 25px;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 215, 0, 0.1);
+    transition: all 0.4s ease;
+    transform: translateY(0) scale(1);
+    z-index: 1;
+    height: 180px;
+}
+
+.price-card:hover {
+    transform: translateY(-10px) scale(1.05);
+    height: auto;
+    z-index: 10;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 215, 0, 0.1);
+}
+
+.card-overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-subtle);
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.price-card:hover .card-overlay {
+    opacity: 1;
+}
+
+.card-content {
+    position: relative;
+    z-index: 1;
+}
+
+.card-header {
+    margin-bottom: 15px;
+}
+
+.symbol {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.accent-line.gold {
+    background: var(--gradient-gold);
+    box-shadow: var(--glow-gold);
+    width: 30px;
+    height: 3px;
+    border-radius: 2px;
+}
+
+.accent-line.wine {
+    background: var(--gradient-wine);
+    box-shadow: var(--glow-wine);
+    width: 30px;
+    height: 3px;
+    border-radius: 2px;
+}
+
+.price {
+    font-size: 2rem;
+    font-weight: 200;
+    margin: 0 0 10px 0;
+    transition: font-size 0.3s ease;
+}
+
+.price-card:hover .price {
+    font-size: 2.2rem;
+}
+
+.price.loading {
+    opacity: 0.7;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 0.4; }
+    100% { opacity: 0.7; }
+}
+
+.original-price {
+    font-size: 0.75rem;
+    color: var(--text-subtle);
+    font-weight: 300;
+    margin-bottom: 15px;
+}
+
+.card-expanded-info {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.4s ease;
+}
+
+.price-card:hover .card-expanded-info {
+    max-height: 200px;
+    opacity: 1;
+}
+
+.currency-name {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin: 15px 0 10px;
+    color: var(--neon-gold);
+}
+
+.currency-description {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-subtle);
+    margin: 0;
+}
+
+
+.chart-container {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-primary);
+    border-radius: 16px;
+    padding: 30px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 215, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.chart-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.title-accent-line {
+    width: 3px;
+    height: 30px;
+    border-radius: 2px;
+    background: var(--gradient-gold);
+}
+
+.title-text {
+    font-size: 1.4rem;
+    font-weight: 200;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.chart-wrapper {
+    height: 400px;
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .price-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .currency-buttons {
+        flex-wrap: wrap;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .price-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        height: auto;
+    }
+}
+
+.clock {
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    padding: 8px 15px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--glow-gold);
+}
+
+@media (max-width: 768px) {
+    .clock {
+        margin-top: 50px;
+    }
+}

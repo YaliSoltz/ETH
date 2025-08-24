@@ -3,7 +3,9 @@
     background: rgb(35, 35, 40);
     color: white;
     display: flex;
-    border-radius: 0 0 10px 0;
+    border-radius: 0 0 0 10px;
+    left: 100%;
+    transform: translateX(-100%);
 }
 .coin-btn {
     padding: 10px 20px;
@@ -13,7 +15,7 @@
     font-weight: 500;
     display: flex;
     text-transform: uppercase;
-    border-radius: 0 0 10px 0;
+    border-radius: 0 0 0 10px;
 
 
 }

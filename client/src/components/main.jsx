@@ -4,6 +4,7 @@ import { CoinContext } from "../context/coin";
 import Chart from "chart.js/auto";
 import { currencyArr } from "../currency";
 import { coins } from "../consts";
+import { useLocation } from "react-router-dom";
 
 const Main = () => {
   const {
@@ -17,20 +18,21 @@ const Main = () => {
     allPrices,
     chart,
     setChart,
+    isLoading,
+    cleanupChart,
   } = useContext(CoinContext);
-
-  const myChart = document.getElementById("myChart1"); // The chart canvas element
 
   const numbers = [7, 30, 180, 365];
 
-  // Func that open the price chart
   const showChart = (currency, num) => {
-    console.log({ currency, allPrices });
+    const myChart = document.getElementById("myChart");
+
+    if (!myChart) return;
+
     const tempArray = allPrices[currency].slice(0, num);
     const priceArray = tempArray.map((price) => price[1]);
     const dateArray = tempArray.map((price) => price[0]);
 
-    // Func that make the line colors
     function getGradient(ctx, chartArea) {
       let gradient;
       gradient = ctx.createLinearGradient(
@@ -45,17 +47,22 @@ const Main = () => {
       return gradient;
     }
 
-    // Destroy the previously created chart if it exists
     if (chart) {
       chart.destroy();
     }
 
-    // New Chart instance
+    const existingChart = Chart.getChart(myChart);
+    if (existingChart) {
+      existingChart.destroy();
+    }
+
     const newChart = new Chart(myChart, {
       type: "line",
       data: {
         labels: dateArray
-          .map((date, i) => (i === 0 ? "Today" : date))
+          .map((date, i) =>
+            i === 0 ? "Today" : i === 1 ? "Yesterday" : date.split(",")[0],
+          )
           .reverse(),
         datasets: [
           {
@@ -113,14 +120,30 @@ const Main = () => {
   };
 
   useEffect(() => {
+    const myChart = document.getElementById("myChart");
+
     if (myChart && Object.keys(allPrices).length !== 0) {
       showChart("USD", 7);
     }
-  }, [myChart, allPrices]);
+  }, [allPrices]);
+
+  useEffect(() => {
+    return () => {
+      cleanupChart();
+
+      const myChart = document.getElementById("`myChart");
+      if (myChart) {
+        const existingChart = Chart.getChart(myChart);
+        if (existingChart) {
+          existingChart.destroy();
+        }
+      }
+    };
+  }, []);
 
   return (
     <div className="main">
-      {Object.keys(coinObj).length > 0 ? (
+      {Object.keys(coinObj).length > 0 && !isLoading ? (
         <div className="card">
           <div className="card-header">
             <span className="name">{coins[currCoin].symbol}</span>
@@ -185,7 +208,7 @@ const Main = () => {
                 %
               </span>
             </div>
-            <canvas id="myChart1"></canvas>
+            <canvas id="myChart"></canvas>
             <div className="chart-days-container">
               {numbers.map((num, i) => (
                 <label className="chart-day" key={i}>

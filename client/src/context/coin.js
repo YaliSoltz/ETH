@@ -11,7 +11,15 @@ const CoinProvider = ({ children }) => {
   const [currentCurrency, setCurrentCurrency] = useState(); // The current currency to display
   const [volumeOrMarketCap, setVolumeOrMarketCap] = useState("volume_24h"); // Choose what to display at the market-cap / 24hour volume select
   const [allPrices, setAllPrices] = useState({}); // Object of arraies of last 365 days ETH price and date in USD/EUR/BTC
-  const [chart, setChart] = useState(false);
+  const [chart, setChart] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const cleanupChart = () => {
+    if (chart) {
+      chart.destroy();
+      setChart(null);
+    }
+  };
 
   // Func that show the currencies options
   const openCurrencySelect = () => {
@@ -36,41 +44,54 @@ const CoinProvider = ({ children }) => {
 
   // Func that get the coin obj from the server and set it
   const getCoinObj = async () => {
-    const url = `http://localhost:4000/api/${currCoin}/`;
-    const { data } = await axios.get(url);
-    console.log(data);
+    //     const url = `http://localhost:4000/api/${currCoin}`; // Node version
+    const url = `http://localhost:8000/api/${currCoin}`; // Fast Api version
 
-    const { last_updated } = data;
-    setCoinObj({ ...data });
-    let priceObj = {};
-    currencyArr.map((currency) => (priceObj[currency] = data[currency].price));
-    getCoinPrices(
-      last_updated,
+    try {
+      setIsLoading(true);
+      const { data } = await axios.get(url);
 
-      priceObj,
-    );
+      const { last_updated } = data;
+      setCoinObj({ ...data });
+      let priceObj = {};
+      currencyArr.map(
+        (currency) => (priceObj[currency] = data[currency].price),
+      );
+      getCoinPrices(last_updated, priceObj);
+    } catch (error) {
+      console.error("Error fetching coin data:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Func that get the last 365 days coin price and date
   const getCoinPrices = async (date, priceObj) => {
     let obj = {};
+    setIsLoading(true);
     for (let i = 0; i < currencyArr.length; i++) {
       const currency = currencyArr[i];
       const url = `https://api.coingecko.com/api/v3/coins/${coins[currCoin].name}/market_chart?vs_currency=${currency}&days=365&x_cg_demo_api_key=${process.env.REACT_APP_CRYPTO_API_KEY}`;
-      const { data } = await axios.get(url);
+      try {
+        const { data } = await axios.get(url);
 
-      // Sort the array by date
-      let tempArray = data.prices.sort((a, b) => b[0] - a[0]);
-      tempArray.splice(0, 2, [date, priceObj[currency]]);
+        // Sort the array by date
+        let tempArray = data.prices.sort((a, b) => b[0] - a[0]);
+        tempArray.splice(0, 2, [date, priceObj[currency]]);
 
-      // Convert the Unix timestamp value to a human-readable date and time
-      tempArray.forEach((price) => {
-        price[0] = new Date(price[0]).toLocaleString();
-        if (currency !== "BTC") price[1] = price[1].toFixed(2);
-      });
-      obj[currency] = tempArray;
+        // Convert the Unix timestamp value to a human-readable date and time
+        tempArray.forEach((price) => {
+          price[0] = new Date(price[0]).toLocaleString();
+          if (currency !== "BTC") price[1] = price[1].toFixed(2);
+        });
+        obj[currency] = tempArray;
+      } catch (error) {
+        console.error(`Error fetching ${currency} prices:`, error);
+      }
+
+      setIsLoading(false);
     }
-    console.log(obj);
+
     setAllPrices({ ...obj });
   };
 
@@ -87,6 +108,7 @@ const CoinProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    cleanupChart();
     getCoinObj();
   }, [currCoin]);
 
@@ -108,6 +130,8 @@ const CoinProvider = ({ children }) => {
         changeVolumeOrMarketCap,
         chart,
         setChart,
+        cleanupChart,
+        isLoading,
       }}
     >
       {children}
