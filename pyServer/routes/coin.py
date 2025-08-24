@@ -24,7 +24,7 @@ CURRENCIES = [
     ("ILS", "₪"),
 ]
 
-CMC_API_KEY = "92644239-8cbd-47fa-b5d7-7b0ab1d60a9a"
+CMC_API_KEY = "66a7362c-abfd-4779-af3d-6ea873567734"
 CMC_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest"
 
 
@@ -35,6 +35,7 @@ async def get_coin(coin: str):
 
     coin_data = {}
     headers = {"X-CMC_PRO_API_KEY": CMC_API_KEY}
+
 
     async with httpx.AsyncClient() as client:
         for currency, symbol in CURRENCIES:
